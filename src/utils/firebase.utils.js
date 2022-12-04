@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth"
-import { getDoc, setDoc } from "firebase/firestore"
+import { getDoc, getFirestore, collection, addDoc, getDocs, doc } from "firebase/firestore"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -18,6 +18,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
+const firestore = getFirestore(firebaseApp)
 
 const provider = new GoogleAuthProvider()
 provider.setCustomParameters({
@@ -25,10 +26,35 @@ provider.setCustomParameters({
 })
 const auth = getAuth(firebaseApp)
 
+const userCollection = collection(firestore, "users")
+
 const signInWithGooglePopup = async () => await signInWithPopup(auth, provider)
 
 const signInWithGoogleEmailAndPassword = async (email, password) => await signInWithEmailAndPassword(auth, email, password)
 
+const createUserGoogleWithEmailAndPassword = async (email, password, fullname) => {
+    const userRef = await addDoc(userCollection, { email: email || null, password: password || null, fullname: fullname || null, createAt: new Date() })
+    return userRef.id
+}
+
+const getUserGoogleWithEmail = async (email) => {
+    const userSnapshot = await getDocs(userCollection)
+    const userRef = userSnapshot.docs.filter((doc) => {
+        return doc.data().email === email
+    })
+    return userRef[0]?.id
+}
+
+const getUserGoogleWithId = async (id) => {
+    const userSnapshot = await getDoc(doc(firestore, "users", id))
+    return userSnapshot.data()
+}
+
 export {
-    auth, signInWithGooglePopup, signInWithGoogleEmailAndPassword
+    auth,
+    signInWithGooglePopup,
+    signInWithGoogleEmailAndPassword,
+    createUserGoogleWithEmailAndPassword,
+    getUserGoogleWithEmail,
+    getUserGoogleWithId
 }
