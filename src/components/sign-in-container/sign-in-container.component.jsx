@@ -1,6 +1,6 @@
 import Input from "../input/input-container.component"
 import Button from "../button/button.component"
-import { signInWithGoogleEmailAndPassword, signInWithGooglePopup } from "../../utils/firebase.utils"
+import { logInUserWithEmailAndPassword, logInWithGooglePopup } from "../../utils/firebase.utils"
 import { useState } from "react"
 
 import "./sign-in-container.style.scss"
@@ -18,9 +18,9 @@ const SignInContainer = () => {
         event.preventDefault()
 
         const { email, password } = formFields
+        console.log(formFields)
         try {
-            const response = await signInWithGoogleEmailAndPassword(email, password)
-            console.log(response)
+            await logInUserWithEmailAndPassword(email, password)
         }
         catch (error) {
             switch (error.code) {
@@ -29,6 +29,9 @@ const SignInContainer = () => {
                     break
                 case "auth/user-not-found":
                     alert("user not found")
+                    break
+                case "auth/wrong-password":
+                    alert("wrong password")
                     break
                 default:
                     alert(error.message)
@@ -39,8 +42,7 @@ const SignInContainer = () => {
 
     const loginWithGoogleHandle = async () => {
         try {
-            const response = await signInWithGooglePopup()
-            console.log(response)
+            await logInWithGooglePopup()
         }
         catch (error) {
             console.log(error)
@@ -62,7 +64,7 @@ const SignInContainer = () => {
                 <Button buttonType="submit" type="submit">LOG IN</Button>
                 <Button buttonType="google" onClick={loginWithGoogleHandle}>LOG IN WITH GOOGLE</Button>
             </form>
-        </div >
+        </div>
     )
 }
 

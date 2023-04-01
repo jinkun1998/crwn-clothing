@@ -1,7 +1,15 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth"
-import { getDoc, getFirestore, collection, addDoc, getDocs, doc } from "firebase/firestore"
+import {
+    getAuth,
+    signInWithPopup,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signOut,
+    onAuthStateChanged
+} from "firebase/auth"
+import { getDoc, getFirestore, collection, getDocs, doc, setDoc } from "firebase/firestore"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -28,13 +36,34 @@ const auth = getAuth(firebaseApp)
 
 const userCollection = collection(firestore, "users")
 
-const signInWithGooglePopup = async () => await signInWithPopup(auth, provider)
+const logInWithGooglePopup = async () => await signInWithPopup(auth, provider)
 
-const signInWithGoogleEmailAndPassword = async (email, password) => await signInWithEmailAndPassword(auth, email, password)
+const logInUserWithEmailAndPassword = async (email, password) => {
+    if (!email || !password) return
+    await signInWithEmailAndPassword(auth, email, password)
+}
 
-const createUserGoogleWithEmailAndPassword = async (email, password, fullname) => {
-    const userRef = await addDoc(userCollection, { email: email || null, password: password || null, fullname: fullname || null, createAt: new Date() })
-    return userRef.id
+const signUpWithEmailAndPassword = async (email, password) => {
+    if (!email || !password) return
+    const userAuth = await createUserWithEmailAndPassword(auth, email, password)
+    return userAuth
+}
+
+const createUserDocumentFromAuth = async (userAuth, additionalInfo) => {
+    if (!userAuth) return
+    const userDocRef = doc(firestore, 'users', userAuth.uid)
+    const userSnapshot = await getDoc(userDocRef)
+    if (!userSnapshot.exists()) {
+        const { email, displayName } = userAuth
+        const createAt = new Date()
+        try {
+            await setDoc(userDocRef, { email, displayName, createAt, ...additionalInfo, })
+        }
+        catch (error) {
+            console.log("create user failed", error.message)
+        }
+    }
+    return userDocRef
 }
 
 const getUserGoogleWithEmail = async (email) => {
@@ -50,11 +79,20 @@ const getUserGoogleWithId = async (id) => {
     return userSnapshot.data()
 }
 
+const signOutUser = async () => await signOut(auth)
+
+const onAuthStateChangedListner = (callback) => {
+    return onAuthStateChanged(auth, callback)
+}
+
 export {
     auth,
-    signInWithGooglePopup,
-    signInWithGoogleEmailAndPassword,
-    createUserGoogleWithEmailAndPassword,
+    logInWithGooglePopup,
+    logInUserWithEmailAndPassword,
+    signUpWithEmailAndPassword,
+    createUserDocumentFromAuth,
     getUserGoogleWithEmail,
-    getUserGoogleWithId
+    getUserGoogleWithId,
+    signOutUser,
+    onAuthStateChangedListner
 }
