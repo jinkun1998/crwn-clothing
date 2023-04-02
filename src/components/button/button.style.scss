@@ -3,12 +3,12 @@
   width: 200px;
   margin: 20px;
   border-color: transparent;
-  border-radius: 3px;
 
   &:hover {
     background-color: white;
     border: 1px solid black;
     color: black;
+    cursor: pointer;
   }
 }
 
