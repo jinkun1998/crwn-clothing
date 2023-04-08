@@ -9,7 +9,14 @@ import {
     signOut,
     onAuthStateChanged
 } from "firebase/auth"
-import { getDoc, getFirestore, collection, getDocs, doc, setDoc } from "firebase/firestore"
+import {
+    getDoc,
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    setDoc
+} from "firebase/firestore"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -83,6 +90,16 @@ const signOutUser = async () => await signOut(auth)
 
 const onAuthStateChangedListner = (callback) => {
     return onAuthStateChanged(auth, callback)
+}
+
+const addCollectionAndDocuments = async (
+    collectionKey,
+    objectsToAdd,
+    field
+) => {
+    const collectionRef = collection(firestore, collectionKey)
+    const batch = writeBatch(firestore)
+
 }
 
 export {
