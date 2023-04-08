@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useReducer } from "react";
 import { createContext } from "react";
 
 const addCartItem = (cartItems, productToAdd) => {
@@ -26,6 +26,46 @@ const deleteCartItem = (cartItems, productToDelete) => {
         cartItems
 }
 
+const calculateCartItem = (cartItems) => {
+    const newCartTotal = cartItems.reduce((price, cartItem) => price + (cartItem.price * cartItem.quantity), 0)
+    const newCartItemCount = cartItems.reduce((quantity, cartItem) => quantity + cartItem.quantity, 0)
+    return {
+        cartItems: cartItems,
+        cartTotal: newCartTotal,
+        cartItemCount: newCartItemCount
+    }
+}
+
+const CART_ACTION_TYPE = {
+    ADD_ITEM: "ADD_ITEM",
+    REMOVE_ITEM: "REMOVE_ITEM",
+    DELETE_ITEM: " DELETE_ITEM"
+}
+
+const INIT_CART = {
+    cartItems: [],
+    cartTotal: 0,
+    cartItemCount: 0
+}
+
+const cartItemProducer = (state, action) => {
+    const { type, payload } = action
+    let newCartItems = []
+    switch (type) {
+        case CART_ACTION_TYPE.ADD_ITEM:
+            newCartItems = addCartItem(state.cartItems, payload)
+            return calculateCartItem(newCartItems)
+        case CART_ACTION_TYPE.REMOVE_ITEM:
+            newCartItems = removeCartItem(state.cartItems, payload)
+            return calculateCartItem(newCartItems)
+        case CART_ACTION_TYPE.DELETE_ITEM:
+            newCartItems = deleteCartItem(state.cartItems, payload)
+            return calculateCartItem(newCartItems)
+        default:
+            break
+    }
+}
+
 export const CartItemContext = createContext({
     cartItems: [],
     cartItemCount: 0,
@@ -35,30 +75,20 @@ export const CartItemContext = createContext({
 })
 
 export const CartItemProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState([])
-    const [cartItemCount, setCartItemCount] = useState(0)
-    const [cartTotal, setCartTotal] = useState(0)
+
+    const [{ cartItems, cartTotal, cartItemCount }, dispatch] = useReducer(cartItemProducer, INIT_CART)
+
     const addItemToCart = (productToAdd) => {
-        setCartItems(addCartItem(cartItems, productToAdd))
+        dispatch({ type: CART_ACTION_TYPE.ADD_ITEM, payload: productToAdd })
     }
 
     const removeItemFromCart = (productToRemove) => {
-        setCartItems(removeCartItem(cartItems, productToRemove))
+        dispatch({ type: CART_ACTION_TYPE.REMOVE_ITEM, payload: productToRemove })
     }
 
     const deleteItemFromCart = (productToDelete) => {
-        setCartItems(deleteCartItem(cartItems, productToDelete))
+        dispatch({ type: CART_ACTION_TYPE.DELETE_ITEM, payload: productToDelete })
     }
-
-    useEffect(() => {
-        const count = cartItems.reduce((quantity, cartItem) => quantity + cartItem.quantity, 0)
-        setCartItemCount(count)
-    }, [cartItems])
-
-    useEffect(() => {
-        const total = cartItems.reduce((price, cartItem) => price + (cartItem.price * cartItem.quantity), 0)
-        setCartTotal(total)
-    }, [cartItems])
 
     const value = { cartItems, addItemToCart, removeItemFromCart, deleteItemFromCart, cartItemCount, cartTotal }
     return <CartItemContext.Provider value={value}>{children}</CartItemContext.Provider>

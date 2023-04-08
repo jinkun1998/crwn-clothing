@@ -1,5 +1,26 @@
-import { createContext, useState } from "react";
+import { createContext, useReducer } from "react";
 
+const IS_CART_OPEN_TYPE = {
+    SET_IS_CART_OPEN: "SET_IS_CART_OPEN"
+}
+
+const INIT_IS_CART_OPEN = {
+    isCartOpen: false
+}
+
+const IsCartOpenReducer = (state, action) => {
+    console.log(action)
+    const { type, payload } = action
+    switch (type) {
+        case IS_CART_OPEN_TYPE.SET_IS_CART_OPEN:
+            return {
+                ...state,
+                isCartOpen: payload
+            }
+        default:
+            break
+    }
+}
 
 export const IsCartOpenContext = createContext({
     isCartOpen: false,
@@ -7,7 +28,12 @@ export const IsCartOpenContext = createContext({
 })
 
 export const IsCartOpenProvider = ({ children }) => {
-    const [isCartOpen, setIsCartOpen] = useState(false)
+    const [{ isCartOpen }, dispatch] = useReducer(IsCartOpenReducer, INIT_IS_CART_OPEN)
+
+    const setIsCartOpen = (bool) => {
+        dispatch({ type: IS_CART_OPEN_TYPE.SET_IS_CART_OPEN, payload: bool })
+    }
+
     const value = { isCartOpen, setIsCartOpen }
     return <IsCartOpenContext.Provider value={value}>{children}</IsCartOpenContext.Provider>
 }
