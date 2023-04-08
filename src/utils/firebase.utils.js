@@ -15,7 +15,9 @@ import {
     collection,
     getDocs,
     doc,
-    setDoc
+    setDoc,
+    writeBatch,
+    query
 } from "firebase/firestore"
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -94,12 +96,27 @@ const onAuthStateChangedListner = (callback) => {
 
 const addCollectionAndDocuments = async (
     collectionKey,
-    objectsToAdd,
-    field
+    objectsToAdd
 ) => {
     const collectionRef = collection(firestore, collectionKey)
     const batch = writeBatch(firestore)
+    objectsToAdd.forEach(object => {
+        const docRef = doc(collectionRef, object.title.toLowerCase())
+        batch.set(docRef, object)
+    });
+    await batch.commit();
+}
 
+const getCollectionAndDocuments = async (collectionKey) => {
+    const collectionRef = collection(firestore, collectionKey)
+    const queryCollection = query(collectionRef)
+    const querySnapshot = await getDocs(queryCollection)
+    const docsSnapshot = querySnapshot.docs.reduce((collection, docSnapshot) => {
+        const { title, items } = docSnapshot.data()
+        collection[title.toLowerCase()] = items
+        return collection
+    }, {})
+    return docsSnapshot
 }
 
 export {
@@ -111,5 +128,7 @@ export {
     getUserGoogleWithEmail,
     getUserGoogleWithId,
     signOutUser,
-    onAuthStateChangedListner
+    onAuthStateChangedListner,
+    addCollectionAndDocuments,
+    getCollectionAndDocuments
 }
