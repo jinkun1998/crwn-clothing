@@ -21,7 +21,7 @@ const IsCartOpenReducer = (state, action) => {
     }
 }
 
-export const IsCartOpenContext = createContext({
+const IsCartOpenContext = createContext({
     isCartOpen: false,
     setIsCartOpen: () => { }
 })

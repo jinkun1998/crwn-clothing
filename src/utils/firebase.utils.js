@@ -111,11 +111,7 @@ const getCollectionAndDocuments = async (collectionKey) => {
     const collectionRef = collection(firestore, collectionKey)
     const queryCollection = query(collectionRef)
     const querySnapshot = await getDocs(queryCollection)
-    const docsSnapshot = querySnapshot.docs.reduce((collection, docSnapshot) => {
-        const { title, items } = docSnapshot.data()
-        collection[title.toLowerCase()] = items
-        return collection
-    }, {})
+    const docsSnapshot = querySnapshot.docs.map(docSnapshot => docSnapshot.data())
     return docsSnapshot
 }
 
