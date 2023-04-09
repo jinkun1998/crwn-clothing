@@ -52,7 +52,9 @@ const SignUpContainer = () => {
                 <Input labelName="Email" type="email" name="email" onChange={onInputChangeHandle} value={email} required />
                 <Input labelName="Password" type="password" name="password" onChange={onInputChangeHandle} value={password} required />
                 <Input labelName="Confirm password" name="confirmPassword" type="password" value={confirmPassword} onChange={onInputChangeHandle} required />
-                <Button buttonType="submit" type="submit">SIGN UP</Button>
+                <div className="button-container">
+                    <Button buttonType="submit" type="submit">SIGN UP</Button>
+                </div>
             </form>
         </div>
     )

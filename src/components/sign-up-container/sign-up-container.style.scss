@@ -1,0 +1,13 @@
+.sign-up-container {
+  width: 25%;
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+
+    .button-submit {
+      margin: 15px;
+      width: 45%;
+    }
+  }
+}
