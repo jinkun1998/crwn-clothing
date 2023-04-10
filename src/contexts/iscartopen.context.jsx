@@ -9,7 +9,6 @@ const INIT_IS_CART_OPEN = {
 }
 
 const IsCartOpenReducer = (state, action) => {
-    console.log(action)
     const { type, payload } = action
     switch (type) {
         case IS_CART_OPEN_TYPE.SET_IS_CART_OPEN:
@@ -22,7 +21,7 @@ const IsCartOpenReducer = (state, action) => {
     }
 }
 
-export const IsCartOpenContext = createContext({
+const IsCartOpenContext = createContext({
     isCartOpen: false,
     setIsCartOpen: () => { }
 })

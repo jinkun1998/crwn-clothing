@@ -66,7 +66,7 @@ const cartItemProducer = (state, action) => {
     }
 }
 
-export const CartItemContext = createContext({
+const CartItemContext = createContext({
     cartItems: [],
     cartItemCount: 0,
     addItemToCart: () => { },

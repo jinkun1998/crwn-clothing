@@ -1,2 +1,15 @@
 .sign-in-container {
+  width: 25%;
+
+  .button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    .button-submit,
+    .button-google {
+      margin: 15px;
+      width: 45%;
+    }
+  }
 }

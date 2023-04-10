@@ -1,21 +1,24 @@
 import { Outlet, Link } from "react-router-dom"
 import { Fragment, useContext } from "react"
 import { ReactComponent as CrwnLogo } from "../../crown.svg"
-import { UserContext } from "../../contexts/users.context"
 import { signOutUser } from "../../utils/firebase.utils"
+import { useDispatch, useSelector } from "react-redux"
+import { selectCurrentUser } from "../../store/user/user.selector"
+import { setCurrentUser } from "../../store/user/user.action"
+import { selectIsCartOpen } from "../../store/cart/cart.selector"
+import CartDropDown from "../../components/cart-dropdown/cart-dropdown.component"
+import CartIcon from "../../components/cart-icon/cart-icon.component"
 
 import "./navigation.style.scss"
-import CartIcon from "../../components/cart-icon/cart-icon.component"
-import CartDropDown from "../../components/cart-dropdown/cart-dropdown.component"
-import { IsCartOpenContext } from "../../contexts/iscartopen.context"
 
 const Navigation = () => {
-    const { currentUser, setCurrentUser } = useContext(UserContext)
-    const { isCartOpen } = useContext(IsCartOpenContext)
+    const dispatch = useDispatch()
+    const currentUser = useSelector(selectCurrentUser)
+    const isCartOpen = useSelector(selectIsCartOpen)
 
     const signOutHandler = async () => {
         await signOutUser()
-        setCurrentUser(null)
+        dispatch(setCurrentUser(null))
     }
 
     return (

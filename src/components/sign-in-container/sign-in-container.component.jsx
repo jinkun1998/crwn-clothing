@@ -2,6 +2,7 @@ import Input from "../input/input-container.component"
 import Button from "../button/button.component"
 import { logInUserWithEmailAndPassword, logInWithGooglePopup } from "../../utils/firebase.utils"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 import "./sign-in-container.style.scss"
 
@@ -12,15 +13,17 @@ const defaultFormFields = {
 
 const SignInContainer = () => {
 
+    const navigation = useNavigate()
+
     const [formFields, setFormFields] = useState(defaultFormFields)
 
     const loginHandle = async (event) => {
         event.preventDefault()
 
         const { email, password } = formFields
-        console.log(formFields)
         try {
             await logInUserWithEmailAndPassword(email, password)
+            navigation("/")
         }
         catch (error) {
             switch (error.code) {
@@ -43,6 +46,7 @@ const SignInContainer = () => {
     const loginWithGoogleHandle = async () => {
         try {
             await logInWithGooglePopup()
+            navigation("/")
         }
         catch (error) {
             console.log(error)
@@ -61,8 +65,10 @@ const SignInContainer = () => {
             <form className="sign-in-form" onSubmit={loginHandle}>
                 <Input className="input" labelName="Email" type="email" name="email" onChange={onInputChangeHandle} required />
                 <Input className="input" labelName="Password" name="password" type="password" onChange={onInputChangeHandle} required />
-                <Button buttonType="submit" type="submit">LOG IN</Button>
-                <Button buttonType="google" onClick={loginWithGoogleHandle}>LOG IN WITH GOOGLE</Button>
+                <div className="button-container">
+                    <Button buttonType="submit" type="submit">LOG IN</Button>
+                    <Button buttonType="google" onClick={loginWithGoogleHandle}>LOG IN WITH GOOGLE</Button>
+                </div>
             </form>
         </div>
     )
