@@ -13,7 +13,6 @@ const INIT_CART = {
 }
 
 export const cartProducer = (state = INIT_CART, action) => {
-    console.log(action)
     const { type, payload } = action
     switch (type) {
         case CART_ACTION_TYPE.SET_CART_ITEMS:
